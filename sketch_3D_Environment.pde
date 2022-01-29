@@ -1,5 +1,6 @@
 boolean wkey, akey, skey, dkey;
 float eyeX, eyeY, eyeZ, focusX, focusY, focusZ, upX, upY, upZ;
+float leftRightHeadAngle, upDownHeadAngle;
 
 void setup()
 {
@@ -16,19 +17,32 @@ void setup()
   upY = 1;
   upZ = 0;
   
+  leftRightHeadAngle = radians(270);
+  noCursor();
 }
 
 void draw()
 {
   background(0);
+  camera(eyeX, eyeY, eyeZ, focusX, focusY, focusZ, upX, upY, upZ);
   drawFloor();
+  drawFocalPoint();
   controlCamera();
   
 }
 
+void drawFocalPoint()
+{
+  pushMatrix();
+  
+  translate(focusX, focusY, focusZ);
+  sphere(5);
+  
+  popMatrix();
+}
+
 void drawFloor()
 {
-  background(0);
   stroke(255);
   for (int x=-2000; x<= 2000; x+= 100)
   {
@@ -40,15 +54,36 @@ void drawFloor()
 
 void controlCamera()
 {
-  camera(eyeX, eyeY, eyeZ, focusX, focusY, focusZ, upX, upY, upZ);
-  if(wkey)  eyeZ += 10;
-  if(skey)  eyeZ -= 10;
-  if(akey)  eyeX += 10;
-  if(dkey)  eyeX -= 10;
+  if(wkey)
+  {
+    eyeX += cos(leftRightHeadAngle) * 10;
+    eyeZ += sin(leftRightHeadAngle) * 10;
+  }
+  if(skey)  
+  {
+    eyeX -= cos(leftRightHeadAngle) * 10;
+    eyeZ -= sin(leftRightHeadAngle) * 10;
+  }
+  if(akey)
+  {
+    eyeX -= cos(leftRightHeadAngle + PI/2) * 10;
+    eyeZ -= sin(leftRightHeadAngle + PI/2) * 10;
+    
+  }
+  if(dkey)
+  {
+    eyeX -= cos(leftRightHeadAngle - PI/2) * 10;
+    eyeZ -= sin(leftRightHeadAngle - PI/2) * 10;
+  }
   
-  focusX = eyeX;
-  focusY = eyeY;
-  focusZ = eyeZ + 10;
+  leftRightHeadAngle += (mouseX - pmouseX)*0.01;
+  upDownHeadAngle += (mouseY - pmouseY) * 0.01;
+  if(upDownHeadAngle > PI/2.5) upDownHeadAngle = PI/2.5;
+  if(upDownHeadAngle < -PI/2.5) upDownHeadAngle = -PI/2.5;
+  
+  focusX = eyeX + cos(leftRightHeadAngle) * 300;
+  focusY = eyeY + tan(upDownHeadAngle) * 300;
+  focusZ = eyeZ + sin(leftRightHeadAngle) * 300;
 }
 
 void keyPressed()
