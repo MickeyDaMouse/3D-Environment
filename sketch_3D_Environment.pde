@@ -1,10 +1,14 @@
+import java.awt.Robot;
+
+Robot rbt;
+
 boolean wkey, akey, skey, dkey;
 float eyeX, eyeY, eyeZ, focusX, focusY, focusZ, upX, upY, upZ;
 float leftRightHeadAngle, upDownHeadAngle;
 
 void setup()
 {
-  size(800, 600, P3D);
+  size(displayWidth, displayHeight, P3D);
   textureMode(NORMAL);
   wkey = akey = skey = dkey = false;
   eyeX = width/2;
@@ -18,7 +22,15 @@ void setup()
   upZ = 0;
   
   leftRightHeadAngle = radians(270);
-  noCursor();
+  //noCursor();
+  try
+  {
+    rbt = new Robot();
+  }
+  catch(Exception e)
+  {
+    e.printStackTrace();
+  }
 }
 
 void draw()
@@ -84,6 +96,9 @@ void controlCamera()
   focusX = eyeX + cos(leftRightHeadAngle) * 300;
   focusY = eyeY + tan(upDownHeadAngle) * 300;
   focusZ = eyeZ + sin(leftRightHeadAngle) * 300;
+  
+  if(mouseX > width-2) rbt.mouseMove(3, mouseY);
+  else if (mouseX < 2) rbt.mouseMove(width-3, mouseY);
 }
 
 void keyPressed()
